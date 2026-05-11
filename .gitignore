@@ -10,18 +10,12 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
+*.env
+.envrc
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
 .installed.cfg
 *.egg
 MANIFEST
@@ -29,7 +23,6 @@ MANIFEST
 # PyInstaller
 #   Usually these files are written by a python script from a template
 #   before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
 *.spec
 
 # Installer logs
@@ -38,8 +31,7 @@ pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
-.tox/
-.nox/
+
 .coverage
 .coverage.*
 .cache
@@ -155,12 +147,14 @@ activemq-data/
 .env.development.local
 .env.production.local
 .env.test.local
+
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
 
 # Node / Next.js
 node_modules/
@@ -170,6 +164,7 @@ coverage/
 .turbo/
 *.tsbuildinfo
 .vercel/
+
 
 # Spyder project settings
 .spyderproject

@@ -1,0 +1,274 @@
+:root {
+  --google-blue: #1a73e8;
+  --google-red: #ea4335;
+  --google-yellow: #fbbc05;
+  --google-green: #34a853;
+  --google-gray-100: #f8f9fa;
+  --google-gray-200: #eef1f4;
+  --google-gray-400: #c7ccd4;
+  --google-gray-800: #1f2937;
+  --card-shadow: 0 24px 48px rgba(31, 41, 55, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Google Sans", "Product Sans", "Segoe UI", sans-serif;
+  color: var(--google-gray-800);
+  background: radial-gradient(circle at top left, #ffffff 0%, #f4f7fb 45%, #f2f5fb 100%);
+  min-height: 100vh;
+}
+
+.page-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--google-blue),
+    var(--google-green),
+    var(--google-yellow),
+    var(--google-red),
+    var(--google-blue)
+  );
+}
+
+.brand-title {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.brand-subtitle {
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.header-link {
+  text-decoration: none;
+  color: var(--google-blue);
+  font-weight: 600;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.panel {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--google-gray-200);
+}
+
+.panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.panel-header h1,
+.panel-header h2,
+.panel-header h3 {
+  font-size: 20px;
+}
+
+.panel-header p {
+  color: #5f6368;
+  font-size: 14px;
+}
+
+.panel-split {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.panel-aside {
+  padding: 16px;
+  background: var(--google-gray-100);
+  border-radius: 16px;
+  border: 1px dashed var(--google-gray-400);
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .panel-split {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--google-blue);
+  color: white;
+}
+
+.button.secondary {
+  background: var(--google-gray-100);
+  color: var(--google-gray-800);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input,
+.textarea {
+  border-radius: 12px;
+  border: 1px solid var(--google-gray-200);
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+.textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: var(--google-gray-100);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.pending {
+  background: rgba(251, 188, 5, 0.15);
+  color: #b45309;
+}
+
+.badge.completed {
+  background: rgba(52, 168, 83, 0.15);
+  color: #15803d;
+}
+
+.badge.failed {
+  background: rgba(234, 67, 53, 0.15);
+  color: #b91c1c;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--google-gray-100);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--google-gray-200);
+}
+
+.card h4 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.card p {
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--google-gray-200);
+}
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 320px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--google-gray-200);
+  border-radius: 14px;
+  background: #fafbff;
+}
+
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid var(--google-gray-200);
+  font-size: 13px;
+}
+
+.chat-bubble.user {
+  background: rgba(26, 115, 232, 0.1);
+  border-color: rgba(26, 115, 232, 0.3);
+}
+
+.inline-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}

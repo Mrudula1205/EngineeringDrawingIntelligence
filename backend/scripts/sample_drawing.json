@@ -1,0 +1,92 @@
+{
+  "drawing_id": "00000000-0000-0000-0000-000000000001",
+  "job_id": "00000000-0000-0000-0000-000000000002",
+  "job_status": "partial",
+  "processed_at": "2024-01-01T00:00:00Z",
+  "source_gcs_path": "gs://bucket/drawings/sample.pdf",
+  "unit_original": "mm",
+  "unit_normalized": "mm",
+  "title_block": {
+    "drawing_number": "DRW-001",
+    "title": "Sample Bracket",
+    "company": "Example Co",
+    "revision": "A",
+    "date": "2024-01-01",
+    "scale": "1:1",
+    "sheet": "1/1",
+    "material": "SS304",
+    "drawn_by": "JD",
+    "additional_fields": {},
+    "fields_present": ["drawing_number", "title", "company", "revision"],
+    "extraction_error": null
+  },
+  "bom": {
+    "rows": [
+      {
+        "part_number": "P-100",
+        "description": "Bracket",
+        "quantity": "1",
+        "notes": ""
+      }
+    ],
+    "extraction_error": null
+  },
+  "notes": {
+    "material": "SS304",
+    "material_standard": "ASTM A240",
+    "dimensional_notes": [],
+    "surface_finish_notes": [],
+    "process_notes": [],
+    "general_notes": [],
+    "raw_text": "",
+    "extraction_error": null
+  },
+  "dimensions": {
+    "views": {
+      "FRONT": {
+        "inner_radius": {
+          "value_mm": 5.0,
+          "value_original": 5.0,
+          "unit_original": "mm",
+          "inferred": true,
+          "inference_method": "implied_symmetry",
+          "confidence": 0.6
+        },
+        "outer_radius": {
+          "value_mm": null,
+          "value_original": null,
+          "unit_original": "mm",
+          "inferred": false,
+          "inference_method": null,
+          "confidence": 0.0
+        },
+        "length": {
+          "value_mm": 120.0,
+          "value_original": 120.0,
+          "unit_original": "mm",
+          "inferred": false,
+          "inference_method": null,
+          "confidence": 0.95
+        },
+        "thickness": {
+          "value_mm": 2.0,
+          "value_original": 2.0,
+          "unit_original": "mm",
+          "inferred": false,
+          "inference_method": null,
+          "confidence": 0.9
+        },
+        "other_dimensions": []
+      }
+    },
+    "extraction_notes": "",
+    "extraction_error": null
+  },
+  "material_resolved": "SS304",
+  "material_source": "notes",
+  "extraction_summary": {
+    "null_fields": ["dimensions.outer_radius"],
+    "inferred_dimensions": ["FRONT.inner_radius"],
+    "min_confidence_score": 0.6
+  }
+}

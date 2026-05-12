@@ -63,7 +63,11 @@ export default function HomePage() {
             <h2>Chat with the drawing</h2>
             <p>Ask questions using the extracted data.</p>
           </div>
-          <ChatInterface jobId={jobId} disabled={status === "failed" || !result} />
+            <ChatInterface
+              key={jobId ?? "no-job"}
+              jobId={jobId}
+              disabled={status === "failed" || !result}
+            />
         </div>
         <div className="panel-aside">
           <div className="panel-header">

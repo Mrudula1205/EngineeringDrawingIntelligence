@@ -22,6 +22,9 @@ export default function ExtractionResults({ data }: ExtractionResultsProps) {
   const views = (dimensions.views as Record<string, unknown>) || {};
   const bom = (data.bom as Record<string, unknown>) || {};
   const bomRows = (bom.rows as Array<Record<string, string | null>>) || [];
+  const hasBomRows = bomRows.some((row) =>
+    Object.values(row).some((value) => String(value || "").trim().length > 0)
+  );
 
   return (
     <div className="card-grid">
@@ -37,10 +40,12 @@ export default function ExtractionResults({ data }: ExtractionResultsProps) {
         <p>Job: {String(data.job_status || "--")}</p>
         <p>Processed: {String(data.processed_at || "--")}</p>
       </div>
-      <div className="card" style={{ gridColumn: "1 / -1" }}>
-        <h4>BOM</h4>
-        <BOMTable rows={bomRows} />
-      </div>
+      {hasBomRows ? (
+        <div className="card" style={{ gridColumn: "1 / -1" }}>
+          <h4>BOM</h4>
+          <BOMTable rows={bomRows} />
+        </div>
+      ) : null}
       <div className="card" style={{ gridColumn: "1 / -1" }}>
         <h4>Dimensions</h4>
         <DimensionsTable views={views as Record<string, Record<string, { value?: number | null; unit?: string | null; confidence?: number | null } | null>>} />

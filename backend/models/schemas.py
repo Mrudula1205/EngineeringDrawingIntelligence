@@ -71,15 +71,24 @@ class TitleBlock(BaseModel):
 
 
 class BomRow(BaseModel):
-	part_number: Optional[str] = None
-	description: Optional[str] = None
-	quantity: Optional[str] = None
-	notes: Optional[str] = None
+    item: Optional[str] = None
+    part_number: Optional[str] = None
+    sap_no: Optional[str] = None
+    code: Optional[str] = None
+    code2: Optional[str] = None
+    description: Optional[str] = None
+    description2: Optional[str] = None
+    quantity: Optional[str] = None
+    rev: Optional[str] = None
+    vendor: Optional[str] = None
+    vendor2: Optional[str] = None
+    weight: Optional[str] = None
 
 
 class BomBlock(BaseModel):
-	rows: List[BomRow] = Field(default_factory=list)
-	extraction_error: Optional[str] = None
+    rows: List[BomRow] = Field(default_factory=list)
+    headers: List[str] = Field(default_factory=list)
+    extraction_error: Optional[str] = None
 
 
 class NotesBlock(BaseModel):
@@ -95,7 +104,6 @@ class NotesBlock(BaseModel):
 
 class ExtractionSummary(BaseModel):
 	null_fields: List[str] = Field(default_factory=list)
-	inferred_dimensions: List[str] = Field(default_factory=list)
 	min_confidence_score: float = 1.0
 
 

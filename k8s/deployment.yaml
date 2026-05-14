@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doc-intelligence
+  labels:
+    app: doc-intelligence
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: doc-intelligence
+  template:
+    metadata:
+      labels:
+        app: doc-intelligence
+    spec:
+      containers:
+      - name: doc-intelligence
+        image: REGION-docker.pkg.dev/PROJECT_ID/doc-intelligence/doc-intelligence:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+        env:
+        - name: PORT
+          value: "8080"
+        - name: GOOGLE_CLOUD_PROJECT
+          valueFrom:
+            secretKeyRef:
+              name: doc-intelligence-secrets
+              key: project-id
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/app/secrets/key.json"
+        volumeMounts:
+        - name: google-secrets
+          mountPath: /app/secrets
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: google-secrets
+        secret:
+          secretName: google-sa-key

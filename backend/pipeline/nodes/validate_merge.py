@@ -8,7 +8,7 @@ from pipeline.state import PipelineState
 logger = logging.getLogger(__name__)
 
 
-def _collect_null_fields(title: dict, notes: dict, bom: dict, dimensions: dict) -> list[str]:
+def _collect_null_fields(title: dict, notes: dict, dimensions: dict) -> list[str]:
 	missing = []
 	if not title.get("drawing_number"):
 		missing.append("title_block.drawing_number")
@@ -19,17 +19,7 @@ def _collect_null_fields(title: dict, notes: dict, bom: dict, dimensions: dict) 
 	views = (dimensions.get("views") or {})
 	if not views:
 		missing.append("dimensions.views")
-	# No hardcoded dimension keys: we only consider the presence of views
-	# Specific missing dimension names are not enforced here.
 	return missing
-
-
-def _collect_inferred_dimensions(dimensions: dict) -> list[str]:
-	"""
-	VLM only extracts labeled dimensions, never infers.
-	This function always returns an empty list.
-	"""
-	return []
 
 
 def _min_confidence(dimensions: dict) -> float:
@@ -85,26 +75,24 @@ async def validate_merge(state: PipelineState) -> dict:
 
 	# Determine job status based on required dimensions
 	has_dimensions = bool((dimensions.get("views") or {}))
-	null_fields = _collect_null_fields(title, notes, bom, dimensions)
+	null_fields = _collect_null_fields(title, notes, dimensions)
 	
 	# Job is "completed" only if all required fields are present
 	# Otherwise "partial" (some data extracted but incomplete)
 	if drawing_error:
 		job_status = "partial"
 	elif len(null_fields) > 0:
-		# Missing required fields means partial extraction
 		job_status = "partial"
 	elif has_dimensions:
 		job_status = "completed"
 	else:
 		job_status = "partial"
 
-	inferred_dims = _collect_inferred_dimensions(dimensions)
 	min_conf = _min_confidence(dimensions)
 	
-	logger.info("✓ Status: %s | Material: %s (%s) | Missing: %d fields | Inferred: %d dims | Min confidence: %.2f",
+	logger.info("✓ Status: %s | Material: %s (%s) | Missing: %d fields | Min confidence: %.2f",
 			  job_status, material_resolved or "N/A", material_source, 
-			  len(null_fields), len(inferred_dims), min_conf)
+			  len(null_fields), min_conf)
 	
 	if null_fields:
 		logger.warning("⚠️ Missing fields: %s", ", ".join(null_fields[:5]))
@@ -125,7 +113,6 @@ async def validate_merge(state: PipelineState) -> dict:
 		"material_source": material_source,
 		"extraction_summary": {
 			"null_fields": null_fields,
-			"inferred_dimensions": inferred_dims,
 			"min_confidence_score": min_conf,
 		},
 	}

@@ -13,3 +13,5 @@ Pillow>=10.3.0
 pydantic>=2.7.0
 python-dotenv>=1.0.0
 opencv-python
+pdfplumber>=0.11.0
+pytesseract>=0.3.10

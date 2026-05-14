@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import BOMTable from "./BOMTable";
 import DimensionsTable from "./DimensionsTable";
@@ -12,6 +12,8 @@ type ExtractionResultsProps = {
 };
 
 export default function ExtractionResults({ data }: ExtractionResultsProps) {
+  const [showRawJson, setShowRawJson] = useState(false);
+
   if (!data) {
     return <p className="badge">No results yet.</p>;
   }
@@ -49,6 +51,23 @@ export default function ExtractionResults({ data }: ExtractionResultsProps) {
       <div className="card" style={{ gridColumn: "1 / -1" }}>
         <h4>Dimensions</h4>
         <DimensionsTable views={views as Record<string, Record<string, { value?: number | null; unit?: string | null; confidence?: number | null } | null>>} />
+      </div>
+      <div className="card" style={{ gridColumn: "1 / -1" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+          <h4>Raw JSON</h4>
+          <button
+            className="button secondary"
+            onClick={() => setShowRawJson(!showRawJson)}
+            style={{ padding: "6px 12px", fontSize: "12px" }}
+          >
+            {showRawJson ? "Hide" : "Show"}
+          </button>
+        </div>
+        {showRawJson && (
+          <pre className="raw-json">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        )}
       </div>
     </div>
   );

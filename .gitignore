@@ -164,7 +164,7 @@ coverage/
 .turbo/
 *.tsbuildinfo
 .vercel/
-
+.claude
 
 # Spyder project settings
 .spyderproject

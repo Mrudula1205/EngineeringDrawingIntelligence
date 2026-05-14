@@ -8,7 +8,6 @@ from pipeline.nodes import with_retry
 from pipeline.nodes.extract_dimensions_vlm import extract_dimensions_vlm
 from pipeline.nodes.extract_structured_data import (
 	extract_structured_data,
-	extract_notes,
 	extract_tables_node as extract_tables_impl,
 )
 from pipeline.nodes.extract_title import extract_title
@@ -26,10 +25,6 @@ async def extract_structured_data_node(state: PipelineState) -> PipelineState:
 	return await with_retry(
 		extract_structured_data, state, "structured_data", None, update_errors=False
 	)
-
-
-async def extract_notes_node(state: PipelineState) -> PipelineState:
-	return await with_retry(extract_notes, state, "notes", None, update_errors=False)
 
 
 async def extract_tables_node(state: PipelineState) -> PipelineState:
@@ -59,7 +54,6 @@ def build_graph() -> Any:
 
 	graph.add_node("ingest", ingest_node)
 	graph.add_node("extract_structured_data", extract_structured_data_node)
-	graph.add_node("extract_notes", extract_notes_node)
 	graph.add_node("extract_title", extract_title_node)
 	graph.add_node("extract_dimensions_vlm", extract_dimensions_vlm_node)
 	graph.add_node("extract_tables", extract_tables_node)
@@ -69,16 +63,14 @@ def build_graph() -> Any:
 	# Set entry point
 	graph.set_entry_point("ingest")
 
-	# After ingest, run all extractions in parallel (no region detection needed)
+	# After ingest, run all extractions in parallel
 	graph.add_edge("ingest", "extract_structured_data")
-	graph.add_edge("ingest", "extract_notes")
 	graph.add_edge("ingest", "extract_title")
 	graph.add_edge("ingest", "extract_dimensions_vlm")
 	graph.add_edge("ingest", "extract_tables")
 
 	# Merge results from all extractions
 	graph.add_edge("extract_structured_data", "validate_merge")
-	graph.add_edge("extract_notes", "validate_merge")
 	graph.add_edge("extract_title", "validate_merge")
 	graph.add_edge("extract_dimensions_vlm", "validate_merge")
 	graph.add_edge("extract_tables", "validate_merge")

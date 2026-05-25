@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: doc-intelligence
-        image: REGION-docker.pkg.dev/PROJECT_ID/doc-intelligence/doc-intelligence:latest
+        image: us-central1-docker.pkg.dev/project-953fdbff-8291-4198-9c5/doc-intelligence/doc-intelligence:latest
         ports:
         - containerPort: 8080
         resources:
@@ -30,16 +30,11 @@ spec:
         - name: PORT
           value: "8080"
         - name: GOOGLE_CLOUD_PROJECT
-          valueFrom:
-            secretKeyRef:
-              name: doc-intelligence-secrets
-              key: project-id
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: "/app/secrets/key.json"
-        volumeMounts:
-        - name: google-secrets
-          mountPath: /app/secrets
-          readOnly: true
+          value: "project-953fdbff-8291-4198-9c5"
+        - name: GEMINI_TEXT_MODEL
+          value: "gemini-1.5-flash"
+        - name: GEMINI_DRAWING_MODEL
+          value: "gemini-1.5-flash" 
         livenessProbe:
           httpGet:
             path: /health
@@ -52,7 +47,3 @@ spec:
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
-      volumes:
-      - name: google-secrets
-        secret:
-          secretName: google-sa-key

@@ -1,4 +1,4 @@
-# GCP Deployment Guide
+# GCP Deployment Guide - PowerShell
 
 ## Prerequisites
 - gcloud CLI installed
@@ -8,46 +8,50 @@
 
 ## 1. Build and Push Docker Image
 
-```bash
+```powershell
 # Set your project and region
-export PROJECT_ID="your-gcp-project-id"
-export REGION="us-central1"
-export IMAGE_NAME="doc-intelligence-backend"
-export TAG="latest"
+$env:PROJECT_ID="project-953fdbff-8291-4198-9c5"
+$env:REGION="us-central1"
+$env:IMAGE_NAME="doc-intelligence"
 
 # Authenticate to Google Container Registry
-gcloud auth configure-docker ${REGION}-docker.pkg.dev
+gcloud auth configure-docker ${env:REGION}-docker.pkg.dev
 
 # Build the image
-docker build -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/${IMAGE_NAME}/${IMAGE_NAME}:${TAG} .
+docker build -t ${env:REGION}-docker.pkg.dev/${env:PROJECT_ID}/doc-intelligence/${env:IMAGE_NAME}:latest .
 
 # Push to Artifact Registry
-docker push ${REGION}-docker.pkg.dev/${PROJECT_ID}/${IMAGE_NAME}/${IMAGE_NAME}:${TAG}
+docker push ${env:REGION}-docker.pkg.dev/${env:PROJECT_ID}/doc-intelligence/${env:IMAGE_NAME}:latest
 ```
 
 ## 2. Create GKE Cluster (if not exists)
 
-```bash
-gcloud container clusters create doc-intelligence-cluster \
-    --region=${REGION} \
-    --num-nodes=2 \
-    --machine-type=e2-standard-2 \
-    --enable-autoscaling \
-    --min-nodes=1 \
+```powershell
+gcloud container clusters create doc-intelligence-cluster `
+    --region=${env:REGION} `
+    --num-nodes=2 `
+    --machine-type=e2-standard-2 `
+    --enable-autoscaling `
+    --min-nodes=1 `
     --max-nodes=5
 ```
 
-## 3. Apply Kubernetes Deployment
+## 3. Edit deployment.yaml
 
-Replace `your-gcp-project-id` in `deployment.yaml` with your actual project ID, then:
+Open `k8s/deployment.yaml` and replace:
+- `PROJECT_ID` with your actual project ID
+- `REGION` with your region (e.g., `us-central1`)
 
-```bash
+## 4. Apply Kubernetes Deployment
+
+```powershell
 kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
 ```
 
-## 4. Verify Deployment
+## 5. Verify Deployment
 
-```bash
+```powershell
 # Check pods
 kubectl get pods -l app=doc-intelligence
 
@@ -58,45 +62,53 @@ kubectl get svc doc-intelligence
 kubectl logs -l app=doc-intelligence
 ```
 
-## 5. Setup Ingress (optional - for HTTPS)
+## 6. Create Secrets
 
-```bash
-kubectl apply -f k8s/ingress.yaml
+```powershell
+# Create secret for GCP service account
+kubectl create secret generic google-sa-key `
+    --from-file=key.json=path-to-your-service-account-key.json
+
+# Create secret for project ID
+kubectl create secret generic doc-intelligence-secrets `
+    --from-literal=project-id=$env:PROJECT_ID
 ```
 
-## 6. Configure Environment Variables
+## 7. Expose Service (LoadBalancer)
 
-Create a Secret for sensitive env vars:
-```bash
-kubectl create secret generic doc-intelligence-secrets \
-    --from-literal=GOOGLE_APPLICATION_CREDENTIALS="$(cat service-account-key.json | base64)" \
-    --from-literal=FIRESTORE_EMULATOR_HOST="" \
-    --from-literal=GOOGLE_CLOUD_PROJECT="${PROJECT_ID}"
+```powershell
+kubectl expose deployment doc-intelligence `
+    --name=doc-intelligence-lb `
+    --type=LoadBalancer `
+    --port=80 `
+    --target-port=8080
 ```
 
-## 7. Set up Horizontal Pod Autoscaler
+Then get the external IP:
+```powershell
+kubectl get svc doc-intelligence-lb
+```
 
-```bash
-kubectl autoscale deployment doc-intelligence \
-    --cpu-percent=70 \
-    --min=1 \
+## 8. Horizontal Pod Autoscaler
+
+```powershell
+kubectl autoscale deployment doc-intelligence `
+    --cpu-percent=70 `
+    --min=1 `
     --max=10
 ```
 
-## 8. Update Service Account (Recommended)
+## Quick Complete Commands
 
-Create a dedicated service account for the application:
-```bash
-gcloud iam service-accounts create doc-intelligence-sa \
-    --display-name="Doc Intelligence Service Account"
+```powershell
+# Build and push
+$env:PROJECT_ID="your-project-id"
+$env:REGION="us-central1"
+docker build -t ${env:REGION}-docker.pkg.dev/${env:PROJECT_ID}/doc-intelligence/doc-intelligence:latest .
+docker push ${env:REGION}-docker.pkg.dev/${env:PROJECT_ID}/doc-intelligence/doc-intelligence:latest
 
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:doc-intelligence-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
-    --role="roles/run.invoker"
-
-gcloud iam service-accounts keys create sa-key.json \
-    --iam-account=doc-intelligence-sa@${PROJECT_ID}.iam.gserviceaccount.com
-
-kubectl create secret generic google-sa-key \
-    --from-file=key.json=sa-key.json
+# Deploy
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl expose deployment doc-intelligence --name=doc-intelligence-lb --type=LoadBalancer --port=80 --target-port=8080
 ```

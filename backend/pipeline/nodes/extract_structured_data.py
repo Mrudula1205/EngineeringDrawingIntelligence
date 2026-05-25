@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import re
 import tempfile
@@ -11,6 +12,9 @@ from services import gcs
 from utils.table_extraction import extract_bom_table
 
 logger = logging.getLogger(__name__)
+
+
+BOM_EXTRACTION_TIMEOUT_SECONDS = 60
 
 
 NOTES_REGEX = re.compile(r"\bnotes\b", re.IGNORECASE)
@@ -164,7 +168,24 @@ async def extract_tables_node(state: PipelineState) -> dict:
     if not pdf_gcs_path:
         return {"bom_result": {"rows": [], "extraction_error": "pdf_gcs_path missing"}}
 
-    bom_result = _extract_bom_from_pdf(pdf_gcs_path)
+    try:
+        bom_result = await asyncio.wait_for(
+            asyncio.to_thread(_extract_bom_from_pdf, pdf_gcs_path),
+            timeout=BOM_EXTRACTION_TIMEOUT_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        logger.warning(
+            "⏳ BOM extraction timed out after %ds for %s",
+            BOM_EXTRACTION_TIMEOUT_SECONDS,
+            pdf_gcs_path,
+        )
+        return {
+            "bom_result": {
+                "rows": [],
+                "is_valid_bom": False,
+                "extraction_error": f"BOM extraction timed out after {BOM_EXTRACTION_TIMEOUT_SECONDS} seconds.",
+            }
+        }
     
     if bom_result.get("is_valid_bom") and bom_result.get("rows"):
         headers = bom_result.get("headers", [])
